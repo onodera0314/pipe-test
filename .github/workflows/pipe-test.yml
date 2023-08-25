@@ -21,4 +21,5 @@ jobs:
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cat test.xml | sed 's#="/workdir/#="#g'
+          cat test.xml | sed 's#="/workdir/#="#g'　| \
+          reviewdog -f=checkstyle -reporter=github-pr-review -diff="git diff FETCH_HEAD"
