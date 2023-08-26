@@ -1,0 +1,26 @@
+name: pipe-test
+
+on:
+  pull_request
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  secretlint:
+    name: pipe-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        with:
+          fetch-depth: 0
+      - uses: reviewdog/action-setup@8e48baae926e97848f0863ae248f3b08e089c81f # v1.0.5
+      - name: Run secretlint
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          sudo apt install xmlstarlet
+          cat test.xml | sed 's#="/workdir/#="#g' | xmlstarlet ed -d "/checkstyle/file[not(error)]" | \
+          reviewdog -f=checkstyle -reporter=github-pr-review -diff="git diff FETCH_HEAD"
