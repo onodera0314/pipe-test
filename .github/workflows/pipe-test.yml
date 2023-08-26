@@ -22,4 +22,5 @@ jobs:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           sudo apt install xmlstarlet
-          cat test.xml | sed 's#="/workdir/#="#g' | xmlstarlet ed -d "/checkstyle/file[not(error)]"
+          cat test.xml | sed 's#="/workdir/#="#g' | xmlstarlet ed -d "/checkstyle/file[not(error)]" | \
+          reviewdog -f=checkstyle -reporter=github-pr-review -diff="git diff FETCH_HEAD"
